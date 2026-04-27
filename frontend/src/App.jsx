@@ -13,9 +13,12 @@ import JobDetail from "./pages/JobDetail";
 import CompanyProfile from "./pages/CompanyProfile";
 import CandidateDashboard from "./pages/CandidateDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployerJobApplicants from "./pages/EmployerJobApplicants";
 import PostJob from "./pages/PostJob";
 import EditJob from "./pages/EditJob";
 import CompanySettings from "./pages/CompanySettings";
+import Messages from "./pages/Messages";
+import ResumeBuilder from "./pages/ResumeBuilder";
 import NotFound from "./pages/NotFound";
 
 function PrivateRoute({ children, role }) {
@@ -55,9 +58,18 @@ function AppRoutes() {
       <Route path="/candidate/dashboard" element={
         <PrivateRoute role="candidate"><CandidateDashboard /></PrivateRoute>
       } />
+      <Route path="/messages" element={
+        <PrivateRoute><Messages /></PrivateRoute>
+      } />
+      <Route path="/resume-builder" element={
+        <PrivateRoute role="candidate"><ResumeBuilder /></PrivateRoute>
+      } />
 
       <Route path="/employer/dashboard" element={
         <PrivateRoute role="employer"><EmployerDashboard /></PrivateRoute>
+      } />
+      <Route path="/employer/jobs/:id/applicants" element={
+        <PrivateRoute role="employer"><EmployerJobApplicants /></PrivateRoute>
       } />
       <Route path="/employer/post-job" element={
         <PrivateRoute role="employer"><PostJob /></PrivateRoute>

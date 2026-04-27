@@ -29,11 +29,15 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
+// Static folder
+app.use("/uploads", express.static("uploads"));
+
+
 // Health check
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    app: "TalentFlow+ API",
+    app: "HireVerse API",
     version: "1.0.0",
     timestamp: new Date().toISOString(),
   });
@@ -48,6 +52,9 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/jobs", require("./routes/jobs"));
 app.use("/api/companies", require("./routes/companies"));
 app.use("/api/reviews", require("./routes/reviews"));
+app.use("/api/messages", require("./routes/messages"));
+app.use("/api/resumes", require("./routes/resumes"));
+
 
 // 404
 app.use((req, res) => {
@@ -59,7 +66,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`\n🚀 TalentFlow+ API running on http://localhost:${PORT}`);
+  console.log(`\n🚀 HireVerse API running on http://localhost:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV}`);
   console.log(`🗄️  MongoDB: ${process.env.MONGO_URI}\n`);
 });

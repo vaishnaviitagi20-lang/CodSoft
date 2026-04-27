@@ -73,9 +73,10 @@ const jobSchema = new mongoose.Schema(
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         appliedAt: { type: Date, default: Date.now },
         coverLetter: { type: String, default: "" },
+        resume: { type: String, default: "" },
         status: {
           type: String,
-          enum: ["pending", "reviewed", "rejected", "accepted"],
+          enum: ["pending", "reviewed", "rejected", "accepted", "interview"],
           default: "pending",
         },
       },

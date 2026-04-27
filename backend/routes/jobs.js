@@ -4,6 +4,7 @@ const Job = require("../models/Job");
 const Company = require("../models/Company");
 const User = require("../models/User");
 const { protect, authorize } = require("../middleware/auth");
+const upload = require("../middleware/upload");
 
 const router = express.Router();
 
@@ -71,7 +72,123 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// GET /api/jobs/:id — single job detail
+// Routes reordered to avoid parameter collisions
+// 1. Specific routes first
+router.get("/employer/my", protect, authorize("employer"), async (req, res, next) => {
+  try {
+    const jobs = await Job.find({ postedBy: req.user._id })
+      .populate("company", "name logo")
+      .sort("-createdAt");
+    res.json({ success: true, jobs, total: jobs.length });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2. Resource-specific sub-routes
+router.get("/:id/applicants", protect, authorize("employer"), async (req, res, next) => {
+  try {
+    const job = await Job.findById(req.params.id)
+      .populate("applicants.user", "name email resume skills")
+      .select("applicants title postedBy");
+
+    if (!job) return res.status(404).json({ success: false, message: "Job not found." });
+    if (job.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized to view applicants for this job." });
+    }
+
+    res.json({ success: true, applicants: job.applicants, jobTitle: job.title });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put("/:id/applicants/:userId/status", protect, authorize("employer"), async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!["pending", "reviewed", "rejected", "accepted"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status." });
+    }
+
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ success: false, message: "Job not found." });
+    if (job.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized to update status for this job." });
+    }
+
+    const applicant = job.applicants.find((a) => a.user.toString() === req.params.userId);
+    if (!applicant) return res.status(404).json({ success: false, message: "Applicant not found." });
+
+    applicant.status = status;
+    await job.save();
+
+    await User.findOneAndUpdate(
+      { _id: req.params.userId, "appliedJobs.job": req.params.id },
+      { $set: { "appliedJobs.$.status": status } }
+    );
+
+    res.json({ success: true, message: `Application status updated to ${status}.` });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/:id/apply", protect, authorize("candidate"), upload.single("resume"), async (req, res, next) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job || !job.isActive) {
+      return res.status(404).json({ success: false, message: "Job not found." });
+    }
+
+    const alreadyApplied = job.applicants.some(
+      (a) => a.user.toString() === req.user._id.toString()
+    );
+    if (alreadyApplied) {
+      return res.status(409).json({ success: false, message: "You have already applied to this job." });
+    }
+
+    const resumePath = req.file ? `/uploads/resumes/${req.file.filename}` : "";
+    
+    job.applicants.push({ 
+      user: req.user._id, 
+      coverLetter: req.body.coverLetter || "",
+      resume: resumePath
+    });
+    await job.save();
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: { appliedJobs: { job: job._id } },
+    });
+
+    res.json({ success: true, message: "Application submitted successfully!" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/:id/save", protect, authorize("candidate"), async (req, res, next) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ success: false, message: "Job not found." });
+
+    const user = await User.findById(req.user._id);
+    const isSaved = user.savedJobs.includes(req.params.id);
+
+    if (isSaved) {
+      user.savedJobs = user.savedJobs.filter((id) => id.toString() !== req.params.id);
+      await user.save();
+      return res.json({ success: true, saved: false, message: "Job removed from saved." });
+    } else {
+      user.savedJobs.push(req.params.id);
+      await user.save();
+      return res.json({ success: true, saved: true, message: "Job saved!" });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3. General param routes last
 router.get("/:id", async (req, res, next) => {
   try {
     const job = await Job.findById(req.params.id)
@@ -82,9 +199,7 @@ router.get("/:id", async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Job not found." });
     }
 
-    // Increment view count
     await Job.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
-
     res.json({ success: true, job });
   } catch (err) {
     next(err);
@@ -110,14 +225,12 @@ router.post(
         return res.status(400).json({ success: false, message: errors.array()[0].msg });
       }
 
-      // Find employer's company
       const company = await Company.findOne({ owner: req.user._id });
       if (!company) {
         return res.status(400).json({ success: false, message: "Please set up your company profile first." });
       }
 
       const { salaryMin, salaryMax, salaryDisplay, ...rest } = req.body;
-
       const job = await Job.create({
         ...rest,
         salary: {
@@ -175,67 +288,5 @@ router.delete("/:id", protect, authorize("employer"), async (req, res, next) => 
   }
 });
 
-// POST /api/jobs/:id/apply — apply to job
-router.post("/:id/apply", protect, authorize("candidate"), async (req, res, next) => {
-  try {
-    const job = await Job.findById(req.params.id);
-    if (!job || !job.isActive) {
-      return res.status(404).json({ success: false, message: "Job not found." });
-    }
+module.exports = router; 
 
-    const alreadyApplied = job.applicants.some(
-      (a) => a.user.toString() === req.user._id.toString()
-    );
-    if (alreadyApplied) {
-      return res.status(409).json({ success: false, message: "You have already applied to this job." });
-    }
-
-    job.applicants.push({ user: req.user._id, coverLetter: req.body.coverLetter || "" });
-    await job.save();
-
-    await User.findByIdAndUpdate(req.user._id, {
-      $push: { appliedJobs: { job: job._id } },
-    });
-
-    res.json({ success: true, message: "Application submitted successfully!" });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// POST /api/jobs/:id/save — toggle save job
-router.post("/:id/save", protect, authorize("candidate"), async (req, res, next) => {
-  try {
-    const job = await Job.findById(req.params.id);
-    if (!job) return res.status(404).json({ success: false, message: "Job not found." });
-
-    const user = await User.findById(req.user._id);
-    const isSaved = user.savedJobs.includes(req.params.id);
-
-    if (isSaved) {
-      user.savedJobs = user.savedJobs.filter((id) => id.toString() !== req.params.id);
-      await user.save();
-      return res.json({ success: true, saved: false, message: "Job removed from saved." });
-    } else {
-      user.savedJobs.push(req.params.id);
-      await user.save();
-      return res.json({ success: true, saved: true, message: "Job saved!" });
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET /api/jobs/employer/my — employer's own jobs
-router.get("/employer/my", protect, authorize("employer"), async (req, res, next) => {
-  try {
-    const jobs = await Job.find({ postedBy: req.user._id })
-      .populate("company", "name logo")
-      .sort("-createdAt");
-    res.json({ success: true, jobs, total: jobs.length });
-  } catch (err) {
-    next(err);
-  }
-});
-
-module.exports = router;

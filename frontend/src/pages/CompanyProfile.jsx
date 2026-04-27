@@ -30,10 +30,10 @@ export default function CompanyProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-ink-50 dark:bg-ink-950">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-10 h-10 border-4 border-ink-900 border-t-transparent rounded-full animate-spin" />
+          <div className="w-12 h-12 border-4 border-gold-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -41,13 +41,14 @@ export default function CompanyProfile() {
 
   if (!company) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-ink-50 dark:bg-ink-950">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center text-center">
-          <div>
-            <p className="text-5xl mb-4">🏢</p>
-            <h2 className="font-display text-2xl font-bold text-ink-900 mb-3">Company not found</h2>
-            <Link to="/jobs" className="btn-primary">Browse Jobs</Link>
+        <div className="flex-1 flex items-center justify-center text-center p-8">
+          <div className="animate-fade-up">
+            <p className="text-8xl mb-8 grayscale opacity-20">🏢</p>
+            <h2 className="font-display text-3xl font-bold text-ink-900 dark:text-white mb-4">Organization Not Found</h2>
+            <p className="text-ink-500 dark:text-ink-400 mb-8 max-w-md mx-auto">The company profile you're looking for might have been removed or the URL is incorrect.</p>
+            <Link to="/jobs" className="btn-gold py-3 px-8">Return to Opportunities</Link>
           </div>
         </div>
       </div>
@@ -57,15 +58,18 @@ export default function CompanyProfile() {
   const tabs = ["jobs", "reviews", "about"];
 
   return (
-    <div className="min-h-screen flex flex-col bg-ink-50">
+    <div className="min-h-screen flex flex-col bg-ink-50 dark:bg-ink-950 transition-colors duration-500 overflow-hidden relative">
       <Navbar />
 
-      {/* Company Header */}
-      <div className="bg-ink-900 text-white py-12">
-        <div className="page-container">
-          <div className="flex items-start gap-6">
+      {/* Hero Header */}
+      <div className="bg-ink-900 text-white pt-24 pb-16 relative overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gold-400/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4" />
+        
+        <div className="page-container relative z-10">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
             {/* Logo */}
-            <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl font-bold text-gold-400 flex-shrink-0 overflow-hidden">
+            <div className="w-32 h-32 rounded-[2.5rem] bg-white dark:bg-ink-800 border-8 border-white/5 dark:border-ink-800/50 flex items-center justify-center text-4xl font-bold text-gold-500 flex-shrink-0 overflow-hidden shadow-2xl shadow-black/20 transform hover:rotate-3 transition-transform">
               {company.logo ? (
                 <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
               ) : (
@@ -73,207 +77,190 @@ export default function CompanyProfile() {
               )}
             </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h1 className="font-display text-3xl font-bold">{company.name}</h1>
+            <div className="flex-1 text-center md:text-left min-w-0 pt-4">
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-4">
+                <h1 className="font-display text-5xl font-bold tracking-tight">{company.name}</h1>
                 {company.isVerified && (
-                  <span className="badge bg-gold-400/20 text-gold-300 border border-gold-400/30 text-xs">
-                    ✓ Verified
+                  <span className="flex items-center gap-1.5 px-3 py-1 bg-gold-500/10 text-gold-400 border border-gold-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                    Identity Verified
                   </span>
                 )}
               </div>
-              <p className="text-ink-300 text-sm mb-4">
-                {company.industry && `${company.industry}`}
-                {company.industry && company.size && " · "}
-                {company.size && `${company.size} employees`}
+              
+              <p className="text-xl text-ink-300 font-medium max-w-2xl mx-auto md:mx-0 opacity-80 leading-relaxed">
+                {company.industry || "Global Enterprise"} 
+                {company.size && <span className="mx-2 opacity-30">|</span>}
+                {company.size && `${company.size} Professionals`}
               </p>
-              <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-300">
-                {company.location && <span>📍 {company.location}</span>}
-                {company.founded && <span>📅 Founded {company.founded}</span>}
+
+              <div className="flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-4 mt-8 text-sm font-bold uppercase tracking-widest text-ink-400">
+                {company.location && <span className="flex items-center gap-2">📍 {company.location}</span>}
                 {company.website && (
-                  <a
-                    href={company.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-gold-400 hover:text-gold-300 transition-colors"
-                  >
-                    🌐 Website ↗
+                  <a href={company.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-gold-400 hover:text-gold-300 transition-colors">
+                    🌐 Corporate Hub ↗
                   </a>
                 )}
-                {company.contactEmail && (
-                  <span>📧 {company.contactEmail}</span>
-                )}
                 {company.averageRating > 0 && (
-                  <span>
-                    ⭐ {company.averageRating.toFixed(1)} ({company.totalReviews}{" "}
-                    {company.totalReviews === 1 ? "review" : "reviews"})
+                  <span className="flex items-center gap-2 text-white">
+                    ⭐ {company.averageRating.toFixed(1)} <span className="opacity-40">({company.totalReviews} Endorsements)</span>
                   </span>
                 )}
               </div>
             </div>
 
-            <button
-              onClick={() => setShowContact(true)}
-              className="btn-gold hidden sm:flex flex-shrink-0"
-            >
-              📧 Contact
-            </button>
-          </div>
-
-          {/* Stats strip */}
-          <div className="flex gap-8 mt-8 pt-8 border-t border-white/10">
-            {[
-              { label: "Open Positions", val: jobs.length },
-              { label: "Avg. Rating", val: company.averageRating > 0 ? `${company.averageRating.toFixed(1)} ⭐` : "—" },
-              { label: "Reviews", val: company.totalReviews || 0 },
-            ].map(({ label, val }) => (
-              <div key={label}>
-                <p className="text-xl font-bold text-gold-400">{val}</p>
-                <p className="text-xs text-ink-400 mt-0.5">{label}</p>
+            <div className="flex flex-col gap-4 min-w-[200px]">
+              <button
+                onClick={() => setShowContact(true)}
+                className="w-full btn-gold py-4 px-8 text-base font-bold shadow-glow"
+              >
+                Connect with Hiring
+              </button>
+              <div className="flex justify-between items-center px-2">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{jobs.length}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Openings</p>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{company.totalReviews || 0}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-ink-400">Reviews</p>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="page-container py-8">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main */}
+      {/* Content Area */}
+      <div className="page-container py-16 flex-1 relative z-10">
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Tabs */}
-            <div className="flex gap-1 mb-6 border-b border-ink-200">
+            {/* Elegant Tabs */}
+            <div className="flex gap-8 mb-12 border-b border-ink-100 dark:border-ink-800">
               {tabs.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`px-5 py-3 text-sm font-medium capitalize -mb-px border-b-2 transition-colors ${
+                  className={`pb-4 text-xs font-bold uppercase tracking-[0.2em] transition-all relative ${
                     tab === t
-                      ? "border-ink-900 text-ink-900"
-                      : "border-transparent text-ink-400 hover:text-ink-700"
+                      ? "text-ink-900 dark:text-white"
+                      : "text-ink-400 hover:text-ink-600 dark:hover:text-ink-300"
                   }`}
                 >
-                  {t === "jobs" ? `Jobs (${jobs.length})` : t === "reviews" ? `Reviews (${company.totalReviews || 0})` : "About"}
+                  {t === "jobs" ? `Positions (${jobs.length})` : t === "reviews" ? `Endorsements (${company.totalReviews || 0})` : "Identity"}
+                  {tab === t && <div className="absolute bottom-0 left-0 w-full h-1 bg-gold-500 rounded-full animate-fade-in" />}
                 </button>
               ))}
             </div>
 
-            {tab === "jobs" && (
-              <div className="space-y-4">
-                {jobs.length === 0 ? (
-                  <div className="card text-center py-14">
-                    <p className="text-4xl mb-3">💼</p>
-                    <p className="font-medium text-ink-700 mb-1">No open positions right now</p>
-                    <p className="text-sm text-ink-400">Check back later for new opportunities.</p>
+            <div className="animate-fade-up">
+              {tab === "jobs" && (
+                <div className="space-y-6">
+                  {jobs.length === 0 ? (
+                    <div className="card text-center py-24 border-dashed border-2">
+                      <p className="text-6xl mb-6 grayscale opacity-20">💼</p>
+                      <h3 className="text-2xl font-bold text-ink-900 dark:text-white mb-2">No active openings</h3>
+                      <p className="text-ink-500 dark:text-ink-400 max-w-sm mx-auto font-medium">This organization isn't currently hiring for any positions. Subscribe to updates to be the first to know.</p>
+                    </div>
+                  ) : (
+                    jobs.map((job) => <JobCard key={job._id} job={job} />)
+                  )}
+                </div>
+              )}
+
+              {tab === "reviews" && <ReviewSection companyId={id} />}
+
+              {tab === "about" && (
+                <div className="card p-10 border border-ink-100 dark:border-ink-800 shadow-2xl shadow-ink-900/5 dark:shadow-none">
+                  <div className="flex items-center gap-3 mb-8">
+                    <span className="w-1.5 h-6 bg-gold-500 rounded-full" />
+                    <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-white">Organization Mission</h2>
                   </div>
-                ) : (
-                  jobs.map((job) => <JobCard key={job._id} job={job} />)
-                )}
-              </div>
-            )}
-
-            {tab === "reviews" && <ReviewSection companyId={id} />}
-
-            {tab === "about" && (
-              <div className="card p-6">
-                <h2 className="font-semibold text-ink-900 text-lg mb-4">About {company.name}</h2>
-                {company.about ? (
-                  <p className="text-sm text-ink-600 leading-relaxed whitespace-pre-wrap">
-                    {company.about}
-                  </p>
-                ) : (
-                  <p className="text-ink-400 text-sm italic">No description has been provided yet.</p>
-                )}
-              </div>
-            )}
+                  {company.about ? (
+                    <div className="prose dark:prose-invert max-w-none">
+                      <p className="text-lg text-ink-700 dark:text-ink-300 leading-relaxed whitespace-pre-wrap font-medium">
+                        {company.about}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-ink-400 text-lg italic opacity-60">This organization has not yet detailed their mission statement.</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-4">
-            {/* Company Info Card */}
-            <div className="card p-5">
-              <h3 className="font-semibold text-ink-900 mb-4">Company Info</h3>
-              <div className="space-y-3 text-sm">
+          {/* Sidebar Insights */}
+          <div className="space-y-8">
+            <div className="card p-8 border border-ink-100 dark:border-ink-800 bg-white/50 dark:bg-ink-900/30 backdrop-blur-xl">
+              <h3 className="font-display text-xl font-bold text-ink-900 dark:text-white mb-8 tracking-tight">Organization DNA</h3>
+              <div className="space-y-6">
                 {[
-                  ["🏢", "Industry", company.industry],
-                  ["👥", "Company Size", company.size ? `${company.size} employees` : null],
-                  ["📍", "Location", company.location],
-                  ["📅", "Founded", company.founded],
-                  ["📧", "Contact", company.contactEmail],
-                ].map(([icon, label, val]) =>
+                  { icon: "🏢", label: "Industry Sector", val: company.industry },
+                  { icon: "👥", label: "Professional Scale", val: company.size ? `${company.size} Specialists` : null },
+                  { icon: "📍", label: "Global HQ", val: company.location },
+                  { icon: "📅", label: "Establishment", val: company.founded },
+                  { icon: "📧", label: "Direct Inquiries", val: company.contactEmail },
+                ].map(({ icon, label, val }) =>
                   val ? (
-                    <div key={label} className="flex items-start gap-3">
-                      <span className="mt-0.5">{icon}</span>
-                      <div>
-                        <p className="text-xs text-ink-400">{label}</p>
-                        <p className="text-ink-900 font-medium">{val}</p>
+                    <div key={label} className="flex items-center gap-4 p-4 rounded-2xl bg-ink-50 dark:bg-ink-800/50 border border-ink-100 dark:border-ink-800 transition-colors hover:border-gold-500/20">
+                      <span className="text-2xl grayscale opacity-40">{icon}</span>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold text-ink-400 uppercase tracking-widest mb-1">{label}</p>
+                        <p className="text-ink-900 dark:text-white font-bold truncate">{val}</p>
                       </div>
                     </div>
                   ) : null
                 )}
-                {company.website && (
-                  <div className="flex items-start gap-3">
-                    <span className="mt-0.5">🌐</span>
-                    <div>
-                      <p className="text-xs text-ink-400">Website</p>
-                      <a
-                        href={company.website}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-gold-600 hover:text-gold-500 font-medium transition-colors break-all"
-                      >
-                        {company.website.replace(/^https?:\/\//, "")}
-                      </a>
-                    </div>
-                  </div>
-                )}
               </div>
 
-              <button
-                onClick={() => setShowContact(true)}
-                className="w-full btn-primary mt-5 text-sm py-2.5"
-              >
-                📧 Contact Company
-              </button>
+              <div className="mt-10 pt-8 border-t border-ink-100 dark:border-ink-800">
+                <p className="text-center text-[10px] font-bold text-ink-400 uppercase tracking-widest mb-4">Share this Profile</p>
+                <div className="flex justify-center gap-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-10 h-10 rounded-xl bg-ink-100 dark:bg-ink-800 border border-ink-200 dark:border-ink-700 flex items-center justify-center cursor-pointer hover:bg-gold-500 hover:text-white transition-all">
+                      {i === 1 ? '🔗' : i === 2 ? '🐦' : '💼'}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Quick stats */}
-            <div className="card p-5">
-              <h3 className="font-semibold text-ink-900 mb-3 text-sm">At a Glance</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: "Open Roles", val: jobs.length, icon: "💼" },
-                  { label: "Reviews", val: company.totalReviews || 0, icon: "⭐" },
-                ].map(({ label, val, icon }) => (
-                  <div key={label} className="bg-ink-50 rounded-xl p-3 text-center">
-                    <p className="text-xl mb-0.5">{icon}</p>
-                    <p className="font-bold text-ink-900 text-lg">{val}</p>
-                    <p className="text-xs text-ink-400">{label}</p>
-                  </div>
-                ))}
-              </div>
+            {/* Support Message */}
+            <div className="card p-8 bg-gold-500 text-ink-950 shadow-glow border-none relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
+              <h4 className="text-xl font-bold mb-2">Hiring Manager?</h4>
+              <p className="text-sm font-bold opacity-80 mb-6 leading-relaxed">Join the world's leading organizations on the HireVerse platform today.</p>
+              <Link to="/register?role=employer" className="inline-block bg-ink-950 text-white font-bold py-3 px-6 rounded-xl text-xs uppercase tracking-widest shadow-xl transform active:scale-95 transition-transform">Get Started Free</Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Contact Modal */}
+      <Footer />
+
+      {/* Modern Contact Modal */}
       {showContact && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 bg-ink-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setShowContact(false)}
         >
           <div
-            className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl animate-fade-up"
+            className="bg-white dark:bg-ink-900 rounded-[2.5rem] p-10 w-full max-w-lg shadow-2xl animate-fade-up border border-ink-100 dark:border-ink-800"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-display text-xl font-bold text-ink-900">
-                Contact {company.name}
-              </h2>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-white tracking-tight">
+                  Inquiry Portal
+                </h2>
+                <p className="text-sm font-medium text-ink-500 dark:text-ink-400 mt-1">Direct message to {company.name}</p>
+              </div>
               <button
                 onClick={() => setShowContact(false)}
-                className="p-2 rounded-xl hover:bg-ink-50 text-ink-400"
+                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-400 transition-colors"
               >
                 ✕
               </button>
@@ -286,7 +273,6 @@ export default function CompanyProfile() {
           </div>
         </div>
       )}
-
       <Footer />
     </div>
   );

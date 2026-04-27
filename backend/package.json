@@ -1,7 +1,7 @@
 {
-  "name": "talentflow-backend",
+  "name": "hireverse-backend",
   "version": "1.0.0",
-  "description": "TalentFlow+ Job Board API",
+  "description": "HireVerse Job Board API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,7 +16,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.1.1",
     "mongoose": "^8.0.3",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

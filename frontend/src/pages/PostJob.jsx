@@ -59,104 +59,125 @@ export default function PostJob() {
   const labelCls = "label";
 
   return (
-    <div className="min-h-screen flex flex-col bg-ink-50">
+    <div className="min-h-screen flex flex-col bg-ink-50 dark:bg-ink-950 transition-colors duration-500 overflow-hidden relative">
       <Navbar />
 
-      <div className="bg-ink-900 text-white py-10">
-        <div className="page-container max-w-3xl">
-          <h1 className="font-display text-3xl font-bold mb-1">Post a New Job</h1>
-          <p className="text-ink-300">Reach thousands of qualified candidates across all fields.</p>
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold-400/5 dark:bg-gold-400/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-ink-900/5 dark:bg-white/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-          {/* Step indicators */}
-          <div className="flex items-center gap-3 mt-6">
-            {[
-              { n: 1, label: "Basic Info" },
-              { n: 2, label: "Compensation" },
-              { n: 3, label: "Details" },
-            ].map(({ n, label }) => (
-              <div key={n} className="flex items-center gap-2">
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                    step >= n ? "bg-gold-400 text-ink-950" : "bg-white/20 text-white"
-                  }`}
-                >
-                  {n}
+      <div className="bg-ink-900 text-white py-12 relative overflow-hidden">
+        <div className="page-container max-w-4xl relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h1 className="font-display text-4xl font-bold tracking-tight mb-2">Publish a Position</h1>
+              <p className="text-ink-300 text-lg opacity-80">Connect with exceptional talent across the HireVerse network.</p>
+            </div>
+            
+            {/* Step indicators */}
+            <div className="flex items-center gap-4 bg-white/5 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10">
+              {[
+                { n: 1, label: "Identity" },
+                { n: 2, label: "Reward" },
+                { n: 3, label: "Mission" },
+              ].map(({ n, label }) => (
+                <div key={n} className="flex items-center gap-3 px-3 py-1.5 rounded-full transition-all">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${
+                      step >= n ? "bg-gold-500 text-ink-950 shadow-glow" : "bg-white/10 text-white/40"
+                    }`}
+                  >
+                    {n}
+                  </div>
+                  <span className={`text-xs font-bold uppercase tracking-widest hidden sm:inline ${step >= n ? "text-white" : "text-white/40"}`}>{label}</span>
                 </div>
-                <span className={`text-sm ${step >= n ? "text-white" : "text-ink-400"}`}>{label}</span>
-                {n < 3 && <div className={`w-8 h-px ${step > n ? "bg-gold-400" : "bg-white/20"}`} />}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="page-container py-8 max-w-3xl">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="page-container py-12 max-w-4xl flex-1 relative z-10">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Step 1: Basic Info */}
           {step === 1 && (
-            <div className="card p-7 space-y-5 animate-fade-up">
-              <h2 className="font-semibold text-ink-900 text-lg">Basic Information</h2>
+            <div className="card p-10 space-y-8 animate-fade-up border border-ink-100 dark:border-ink-800 shadow-2xl shadow-ink-900/5 dark:shadow-none">
+              <div className="flex items-center gap-3">
+                <span className="w-1.5 h-6 bg-gold-500 rounded-full" />
+                <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-white">Professional Context</h2>
+              </div>
 
-              <div>
-                <label className={labelCls}>Job Title *</label>
+              <div className="space-y-2">
+                <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Job Designation / Title</label>
                 <input
                   value={form.title}
                   onChange={(e) => set("title", e.target.value)}
-                  placeholder="e.g. Senior React Developer"
-                  className={inputCls}
+                  placeholder="e.g. Lead Full-Stack Engineer"
+                  className="input h-14 text-base"
                   required
                 />
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelCls}>Field / Category *</label>
-                  <select value={form.field} onChange={(e) => set("field", e.target.value)} className="select">
+              <div className="grid sm:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Operational Domain</label>
+                  <select value={form.field} onChange={(e) => set("field", e.target.value)} className="select h-14">
                     {JOB_FIELDS.map((f) => <option key={f} value={f}>{f}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className={labelCls}>Job Type *</label>
-                  <select value={form.jobType} onChange={(e) => set("jobType", e.target.value)} className="select">
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Employment Framework</label>
+                  <select value={form.jobType} onChange={(e) => set("jobType", e.target.value)} className="select h-14">
                     {JOB_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelCls}>Location *</label>
-                  <input
-                    value={form.location}
-                    onChange={(e) => set("location", e.target.value)}
-                    placeholder="New York, USA"
-                    className={inputCls}
-                    required
-                  />
+              <div className="grid sm:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Primary Location</label>
+                  <div className="relative group">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 grayscale opacity-40">📍</span>
+                    <input
+                      value={form.location}
+                      onChange={(e) => set("location", e.target.value)}
+                      placeholder="e.g. San Francisco, CA"
+                      className="input h-14 pl-12"
+                      required
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className={labelCls}>Experience Level</label>
-                  <select value={form.experienceLevel} onChange={(e) => set("experienceLevel", e.target.value)} className="select">
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Required Seniority</label>
+                  <select value={form.experienceLevel} onChange={(e) => set("experienceLevel", e.target.value)} className="select h-14">
                     {EXPERIENCE_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
                   </select>
                 </div>
               </div>
 
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <div
-                  onClick={() => set("isRemote", !form.isRemote)}
-                  className={`relative w-11 h-6 rounded-full transition-colors ${form.isRemote ? "bg-jade-500" : "bg-ink-200"}`}
-                >
-                  <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isRemote ? "translate-x-5" : "translate-x-0.5"}`} />
-                </div>
-                <span className="text-sm font-medium text-ink-700 group-hover:text-ink-900 transition-colors">
-                  This is a remote position
-                </span>
-              </label>
+              <div className="pt-4">
+                <label className="flex items-center justify-between p-6 rounded-[1.5rem] bg-ink-50 dark:bg-ink-900/50 border border-ink-100 dark:border-ink-800 cursor-pointer group transition-all hover:border-gold-500/30">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl transition-all ${form.isRemote ? "bg-jade-500 text-white shadow-glow-jade" : "bg-ink-100 dark:bg-ink-800 text-ink-400 grayscale"}`}>
+                      🌐
+                    </div>
+                    <div>
+                      <p className="font-bold text-ink-900 dark:text-white">Distributed / Remote Friendly</p>
+                      <p className="text-xs text-ink-400 font-medium mt-1">This position allows for work from any location.</p>
+                    </div>
+                  </div>
+                  <div
+                    onClick={(e) => { e.preventDefault(); set("isRemote", !form.isRemote); }}
+                    className={`relative w-12 h-6 rounded-full transition-all duration-300 ${form.isRemote ? "bg-jade-500" : "bg-ink-200 dark:bg-ink-800"}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 ${form.isRemote ? "translate-x-7" : "translate-x-1"}`} />
+                  </div>
+                </label>
+              </div>
 
-              <div className="flex justify-end pt-2">
-                <button type="button" onClick={() => setStep(2)} className="btn-primary px-8">
-                  Next: Compensation →
+              <div className="flex justify-end pt-4">
+                <button type="button" onClick={() => setStep(2)} className="btn-primary py-4 px-12 font-bold text-base shadow-lg shadow-ink-900/10">
+                  Next: Compensation Detail
                 </button>
               </div>
             </div>
@@ -164,57 +185,70 @@ export default function PostJob() {
 
           {/* Step 2: Compensation */}
           {step === 2 && (
-            <div className="card p-7 space-y-5 animate-fade-up">
-              <h2 className="font-semibold text-ink-900 text-lg">Compensation</h2>
-              <p className="text-sm text-ink-400 -mt-2">
-                Transparent salary info attracts 3× more applicants.
+            <div className="card p-10 space-y-8 animate-fade-up border border-ink-100 dark:border-ink-800">
+              <div className="flex items-center gap-3">
+                <span className="w-1.5 h-6 bg-gold-500 rounded-full" />
+                <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-white">Compensation Structure</h2>
+              </div>
+              <p className="text-sm font-medium text-ink-500 dark:text-ink-400 bg-gold-500/5 border border-gold-500/10 p-4 rounded-xl">
+                💡 <span className="font-bold text-gold-600 dark:text-gold-400">Market Insight:</span> Positions with transparent salary ranges receive significantly higher engagement from qualified applicants.
               </p>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={labelCls}>Min Salary ($)</label>
-                  <input
-                    type="number"
-                    value={form.salaryMin}
-                    onChange={(e) => set("salaryMin", e.target.value)}
-                    placeholder="60000"
-                    className={inputCls}
-                    min="0"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Minimum Threshold ($)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ink-400">$</span>
+                    <input
+                      type="number"
+                      value={form.salaryMin}
+                      onChange={(e) => set("salaryMin", e.target.value)}
+                      placeholder="60000"
+                      className="input h-14 pl-8"
+                      min="0"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className={labelCls}>Max Salary ($)</label>
-                  <input
-                    type="number"
-                    value={form.salaryMax}
-                    onChange={(e) => set("salaryMax", e.target.value)}
-                    placeholder="80000"
-                    className={inputCls}
-                    min="0"
-                  />
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Maximum Threshold ($)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ink-400">$</span>
+                    <input
+                      type="number"
+                      value={form.salaryMax}
+                      onChange={(e) => set("salaryMax", e.target.value)}
+                      placeholder="95000"
+                      className="input h-14 pl-8"
+                      min="0"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className={labelCls}>Display Text</label>
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Formatted Label</label>
                   <input
                     value={form.salaryDisplay}
                     onChange={(e) => set("salaryDisplay", e.target.value)}
-                    placeholder="$60k–$80k/yr"
-                    className={inputCls}
+                    placeholder="e.g. $60k - $95k / year"
+                    className="input h-14"
                   />
-                  <p className="text-xs text-ink-400 mt-1">Overrides numbers above</p>
+                  <p className="text-[10px] font-bold text-ink-400 uppercase tracking-wider mt-2 px-1">Visible to candidates</p>
                 </div>
               </div>
 
               {form.salaryMin && form.salaryMax && (
-                <div className="bg-jade-50 border border-jade-200 rounded-xl px-4 py-3 text-sm text-jade-700">
-                  ✓ Salary range: ${Number(form.salaryMin).toLocaleString()} – ${Number(form.salaryMax).toLocaleString()} / year
+                <div className="bg-jade-500/5 border-2 border-jade-500/10 rounded-[1.5rem] p-6 text-center animate-pulse-slow">
+                  <p className="text-jade-600 dark:text-jade-400 font-bold text-lg">
+                    Current Range: ${Number(form.salaryMin).toLocaleString()} – ${Number(form.salaryMax).toLocaleString()} USD
+                  </p>
                 </div>
               )}
 
-              <div className="flex justify-between pt-2">
-                <button type="button" onClick={() => setStep(1)} className="btn-ghost">← Back</button>
-                <button type="button" onClick={() => setStep(3)} className="btn-primary px-8">
-                  Next: Details →
+              <div className="flex justify-between items-center pt-4">
+                <button type="button" onClick={() => setStep(1)} className="font-bold text-ink-400 hover:text-ink-900 dark:hover:text-white transition-colors">
+                  ← Previous Stage
+                </button>
+                <button type="button" onClick={() => setStep(3)} className="btn-primary py-4 px-12 font-bold text-base shadow-lg shadow-ink-900/10">
+                  Next: Mission & Details
                 </button>
               </div>
             </div>
@@ -222,81 +256,92 @@ export default function PostJob() {
 
           {/* Step 3: Details */}
           {step === 3 && (
-            <div className="card p-7 space-y-5 animate-fade-up">
-              <h2 className="font-semibold text-ink-900 text-lg">Job Details</h2>
+            <div className="card p-10 space-y-8 animate-fade-up border border-ink-100 dark:border-ink-800">
+              <div className="flex items-center gap-3">
+                <span className="w-1.5 h-6 bg-gold-500 rounded-full" />
+                <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-white">The Mission</h2>
+              </div>
 
-              <div>
-                <label className={labelCls}>Job Description *</label>
+              <div className="space-y-2">
+                <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Detailed Role Description</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => set("description", e.target.value)}
-                  placeholder="Describe the role, the team, what success looks like, and why candidates should be excited..."
-                  rows={6}
-                  className={`${inputCls} resize-none`}
+                  placeholder="Define the scope of impact, the daily challenges, and the cultural environment..."
+                  rows={8}
+                  className="input p-6 text-base leading-relaxed resize-none"
                   required
                 />
-                <p className="text-xs text-ink-400 mt-1">{form.description.length} characters</p>
+                <div className="flex justify-end pt-1">
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${form.description.length > 500 ? 'text-jade-500' : 'text-ink-300'}`}>
+                    {form.description.length} characters
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <label className={labelCls}>Requirements</label>
-                <textarea
-                  value={form.requirements}
-                  onChange={(e) => set("requirements", e.target.value)}
-                  placeholder="• 3+ years of relevant experience&#10;• Strong communication skills&#10;• Bachelor's degree or equivalent"
-                  rows={4}
-                  className={`${inputCls} resize-none`}
-                />
+              <div className="grid sm:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Hard & Soft Requirements</label>
+                  <textarea
+                    value={form.requirements}
+                    onChange={(e) => set("requirements", e.target.value)}
+                    placeholder="List the essential skills and background..."
+                    rows={5}
+                    className="input p-4 text-sm leading-relaxed resize-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Core Responsibilities</label>
+                  <textarea
+                    value={form.responsibilities}
+                    onChange={(e) => set("responsibilities", e.target.value)}
+                    placeholder="What will the candidate own and execute?..."
+                    rows={5}
+                    className="input p-4 text-sm leading-relaxed resize-none"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className={labelCls}>Responsibilities</label>
-                <textarea
-                  value={form.responsibilities}
-                  onChange={(e) => set("responsibilities", e.target.value)}
-                  placeholder="• Lead architecture decisions&#10;• Mentor junior engineers&#10;• Ship features used by millions"
-                  rows={4}
-                  className={`${inputCls} resize-none`}
-                />
-              </div>
-
-              <div>
-                <label className={labelCls}>Required Skills</label>
+              <div className="space-y-2">
+                <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Target Skill Stack</label>
                 <input
                   value={form.skills}
                   onChange={(e) => set("skills", e.target.value)}
-                  placeholder="React, Node.js, MongoDB, TypeScript (comma separated)"
-                  className={inputCls}
+                  placeholder="e.g. React, Docker, Strategic Leadership, Python"
+                  className="input h-14"
                 />
+                <p className="text-[10px] font-bold text-ink-400 uppercase tracking-widest mt-2 px-1 opacity-50 italic">Separate skills with commas</p>
               </div>
 
-              <div>
-                <label className={labelCls}>Application Deadline</label>
+              <div className="space-y-2">
+                <label className="label uppercase text-[10px] tracking-widest font-bold opacity-50">Application Closing Date</label>
                 <input
                   type="date"
                   value={form.deadline}
                   onChange={(e) => set("deadline", e.target.value)}
-                  className={inputCls}
+                  className="input h-14"
                   min={new Date().toISOString().split("T")[0]}
                 />
               </div>
 
-              <div className="flex justify-between pt-2">
-                <button type="button" onClick={() => setStep(2)} className="btn-ghost">← Back</button>
+              <div className="flex justify-between items-center pt-8 border-t border-ink-100 dark:border-ink-800">
+                <button type="button" onClick={() => setStep(2)} className="font-bold text-ink-400 hover:text-ink-900 dark:hover:text-white transition-colors">
+                  ← Review Compensation
+                </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-gold py-3 px-10 text-base"
+                  className="btn-gold py-4 px-12 text-lg font-bold shadow-glow"
                 >
                   {loading ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <span className="flex items-center gap-3">
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Publishing...
+                      Broadcasting...
                     </span>
-                  ) : "🚀 Publish Job"}
+                  ) : "🚀 Publish to HireVerse"}
                 </button>
               </div>
             </div>
